@@ -1,0 +1,22 @@
+[project]
+name = "jax-raft"
+version = "0.1.0"
+description = "A JAX port of the RAFT optical flow model"
+readme = "README.md"
+requires-python = ">=3.10"
+license = {text = "MIT"}
+authors = [{name = "Alexander Becker", email = "alexander.becker@tum.de"}]
+dependencies = [
+  "jax >= 0.5.3",
+]
+
+[project.urls]
+"Homepage" = "https://github.com/alebeck/jax-raft"
+"Source" = "https://github.com/alebeck/jax-raft"
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = ["jax_raft"]
