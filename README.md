@@ -18,4 +18,12 @@ from jax_raft import raft_large  # or raft_small
 model, variables = raft_large(pretrained=True)
 model.apply(variables, image1, image2, train=False)
 ```
-`jax-raft` is fully compatible with `jax.jit`, RAFT's recurrent refinement process has been implemented using `jax.lax.scan`. 
+`jax-raft` is fully compatible with `jax.jit`; RAFT's recurrent refinement process has been implemented using `jax.lax.scan`. 
+
+## Installation
+```python
+pip install git+https://github.com/alebeck/jax-raft
+```
+
+## Additional resources
+In the `scripts` directory, we provide scripts for converting official PyTorch RAFT checkpoints to Flax; and for validation on Sintel. The `examples` directory contains example usage scripts.
