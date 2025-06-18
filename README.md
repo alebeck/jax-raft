@@ -21,7 +21,7 @@ model.apply(variables, image1, image2, train=False)
 `jax-raft` is fully compatible with `jax.jit`; RAFT's recurrent refinement process has been implemented using `jax.lax.scan`. 
 
 ## Installation
-```python
+```bash
 pip install git+https://github.com/alebeck/jax-raft
 ```
 
