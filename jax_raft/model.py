@@ -557,8 +557,8 @@ class RAFT(nn.Module):
         coords0 = make_coords_grid(batch_size, h // 8, w // 8)
         coords1 = make_coords_grid(batch_size, h // 8, w // 8)
 
-        def scan_fn(carry, _):
-            coords1, hidden_state = carry
+        flow_predictions = []
+        for _ in range(num_flow_updates):
             # Don't backpropagate gradients through this branch, see paper
             coords1 = jax.lax.stop_gradient(coords1)
             corr_features = self.corr_block.index_pyramid(corr_pyramid, coords1)
@@ -571,11 +571,7 @@ class RAFT(nn.Module):
 
             up_mask = None if self.mask_predictor is None else self.mask_predictor(hidden_state, train)
             upsampled_flow = upsample_flow(flow=(coords1 - coords0), up_mask=up_mask)
-            return (coords1, hidden_state), upsampled_flow
-
-        _, flow_predictions = jax.lax.scan(
-            scan_fn, (coords1, hidden_state), xs=None, length=num_flow_updates
-        )
+            flow_predictions.append(upsampled_flow)
 
         return flow_predictions
 

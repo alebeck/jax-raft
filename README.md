@@ -12,13 +12,11 @@ With pre-trained checkpoints, `jax-raft` achieves the following metrics on Sinte
 | raft_small (PyTorch)    | 1.998       | 3.279       | 15.0 |
 
 ## Usage
-As easy as that:
 ```python
 from jax_raft import raft_large  # or raft_small
 model, variables = raft_large(pretrained=True)
 model.apply(variables, image1, image2, train=False)
 ```
-`jax-raft` is fully compatible with `jax.jit`; RAFT's recurrent refinement process has been implemented using `jax.lax.scan`. 
 
 ## Installation
 ```bash
