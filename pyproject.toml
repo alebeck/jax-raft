@@ -1,6 +1,6 @@
 [project]
 name = "jax-raft"
-version = "0.1.0"
+version = "0.1.1"
 description = "A JAX port of the RAFT optical flow model"
 readme = "README.md"
 requires-python = ">=3.10"

@@ -200,7 +200,7 @@ def validate_sintel_jax(model, params, data_root, iters=32):
         px5 = np.mean(epe_all<5)
         time_ = np.mean(time_list)
 
-        print("Validation (%s) EPE: %f, 1px: %f, 3px: %f, 5px: %f, time: %f" % (dstype, epe, px1, px3, px5, time_))
+        print("Validation (%s) EPE: %f, 1px: %f, 3px: %f, 5px: %f, fps: %f" % (dstype, epe, px1, px3, px5, 1. / time_))
         results[dstype] = np.mean(epe_list)
 
     return results
@@ -241,7 +241,7 @@ def validate_sintel_torch(model, data_root, iters=32):
         px5 = np.mean(epe_all<5)
         time_ = np.mean(time_list)
 
-        print("Validation (%s) EPE: %f, 1px: %f, 3px: %f, 5px: %f, time: %f" % (dstype, epe, px1, px3, px5, time_))
+        print("Validation (%s) EPE: %f, 1px: %f, 3px: %f, 5px: %f, fps: %f" % (dstype, epe, px1, px3, px5, 1. / time_))
         results[dstype] = np.mean(epe_list)
 
     return results

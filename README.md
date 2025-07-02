@@ -6,9 +6,9 @@ With pre-trained checkpoints, `jax-raft` achieves the following metrics on Sinte
 
 | Model                   | EPE (clean) | EPE (final) | FPS  |
 |-------------------------|-------------|-------------|------|
-| raft_large (`jax-raft`) | 0.650       | 1.019       | 11.9 |
+| raft_large (`jax-raft`) | 0.649       | 1.020       | 11.8 |
 | raft_large (PyTorch)    | 0.649       | 1.020       | 8.1  |
-| raft_small (`jax-raft`) | 1.993       | 3.268       | 36.9 |
+| raft_small (`jax-raft`) | 1.993       | 3.268       | 36.6 |
 | raft_small (PyTorch)    | 1.998       | 3.279       | 15.0 |
 
 ## Usage

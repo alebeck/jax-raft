@@ -481,6 +481,35 @@ class CorrBlock:
         return corr / np.sqrt(num_channels)
 
 
+class UpdateCell(nn.Module):
+
+    corr_block: nn.Module
+    update_block: nn.Module
+    mask_predictor: Optional[nn.Module]
+    coords0: jnp.ndarray
+    context: jnp.ndarray
+    corr_pyramid: list
+    train: bool = False
+
+    @nn.compact
+    def __call__(self, carry):
+        coords1, hidden_state = carry
+        # Don't backpropagate gradients through this branch, see paper
+        coords1 = jax.lax.stop_gradient(coords1)
+        corr_features = self.corr_block.index_pyramid(self.corr_pyramid, coords1)
+
+        flow = coords1 - self.coords0
+        hidden_state, delta_flow = self.update_block(
+            hidden_state, self.context, corr_features, flow, self.train)
+
+        coords1 = coords1 + delta_flow
+
+        up_mask = None if self.mask_predictor is None else self.mask_predictor(hidden_state, self.train)
+        upsampled_flow = upsample_flow(flow=(coords1 - self.coords0), up_mask=up_mask)
+
+        return (coords1, hidden_state), upsampled_flow
+
+
 class RAFT(nn.Module):
     """RAFT model from
     `RAFT: Recurrent All Pairs Field Transforms for Optical Flow <https://arxiv.org/abs/2003.12039>`
@@ -557,21 +586,21 @@ class RAFT(nn.Module):
         coords0 = make_coords_grid(batch_size, h // 8, w // 8)
         coords1 = make_coords_grid(batch_size, h // 8, w // 8)
 
-        flow_predictions = []
-        for _ in range(num_flow_updates):
-            # Don't backpropagate gradients through this branch, see paper
-            coords1 = jax.lax.stop_gradient(coords1)
-            corr_features = self.corr_block.index_pyramid(corr_pyramid, coords1)
-
-            flow = coords1 - coords0
-            hidden_state, delta_flow = self.update_block(
-                hidden_state, context, corr_features, flow, train)
-
-            coords1 = coords1 + delta_flow
-
-            up_mask = None if self.mask_predictor is None else self.mask_predictor(hidden_state, train)
-            upsampled_flow = upsample_flow(flow=(coords1 - coords0), up_mask=up_mask)
-            flow_predictions.append(upsampled_flow)
+        ScanModule = nn.scan(
+            UpdateCell,
+            variable_broadcast="params",
+            split_rngs={"params": False},
+            length=num_flow_updates
+        )
+        _, flow_predictions = ScanModule(
+            self.corr_block,
+            self.update_block,
+            self.mask_predictor,
+            coords0,
+            context,
+            corr_pyramid,
+            train
+        )((coords1, hidden_state))
 
         return flow_predictions
 
